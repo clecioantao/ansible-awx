@@ -1,4 +1,0 @@
-- name: Default Playbook - starting deploy
-  host: all
-  roles:
-    - example

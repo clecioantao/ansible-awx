@@ -1,4 +1,13 @@
-- name: Default Playbook - starting deploy
-  host: all
-  roles:
-    - example
+---
+- name: Playbook simples para testar no localhost via AWX
+  hosts: localhost
+  gather_facts: false
+  connection: local
+
+  tasks:
+    - name: Criar um arquivo de teste no diretório /tmp
+      copy:
+        dest: /tmp/awx_teste.txt
+        content: |
+          Olá! Este é um teste do AWX com Ansible usando localhost.
+          Tudo está funcionando corretamente.
