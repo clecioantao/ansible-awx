@@ -1,12 +1,45 @@
 ---
-
-- name: Install packages
+- name: Ensure screen and tcpdump are installed on Rocky/RHEL
   hosts: all
+  become: true
+  gather_facts: true
+
+  vars:
+    packages:
+      - screen
+      - tcpdump
+
   tasks:
-    - name: YUM | Install packages
+    - name: Ensure dnf-utils is installed (provides config-manager)
       ansible.builtin.dnf:
-        name: "{{ packages }}"
-        state: latest
+        name: dnf-utils
+        state: present
       when: ansible_facts['os_family'] == "RedHat"
 
-...
+    - name: Enable BaseOS repository
+      ansible.builtin.command: dnf config-manager --set-enabled baseos
+      changed_when: false
+      ignore_errors: true
+      when: ansible_facts['os_family'] == "RedHat"
+
+    - name: Enable AppStream repository
+      ansible.builtin.command: dnf config-manager --set-enabled appstream
+      changed_when: false
+      ignore_errors: true
+      when: ansible_facts['os_family'] == "RedHat"
+
+    - name: Clean all metadata
+      ansible.builtin.command: dnf clean all
+      changed_when: false
+      when: ansible_facts['os_family'] == "RedHat"
+
+    - name: Update package metadata (cache)
+      ansible.builtin.dnf:
+        update_cache: true
+      when: ansible_facts['os_family'] == "RedHat"
+
+    - name: Install screen and tcpdump
+      ansible.builtin.dnf:
+        name: "{{ packages }}"
+        state: present
+      when: ansible_facts['os_family'] == "RedHat"
