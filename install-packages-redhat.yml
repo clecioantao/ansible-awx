@@ -4,7 +4,9 @@
   hosts: all
   tasks:
     - name: YUM | Install packages
-      yum: name={{ packages }} state=latest
-      when: ansible_distribution == "CentOS" or ansible_distribution == "RedHat" or ansible_distribution == "Rocky"
+      ansible.builtin.dnf:
+        name: "{{ packages }}"
+        state: latest
+      when: ansible_facts['os_family'] == "RedHat"
 
 ...
